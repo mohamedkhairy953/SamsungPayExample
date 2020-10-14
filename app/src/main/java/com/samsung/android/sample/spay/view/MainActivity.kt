@@ -58,6 +58,11 @@ class MainActivity : AppCompatActivity() {
 
                     override fun onSuccess(p0: Int, p1: Bundle?) {
                         Log.d("TAG", "onSuccess: $p1")
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Success $p0",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         p1?.keySet()?.forEach {
                             Toast.makeText(
                                 this@MainActivity,
@@ -68,6 +73,11 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     override fun onFail(p0: Int, p1: Bundle?) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "onFail $p0",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         p1?.keySet()?.forEach {
                             Toast.makeText(
                                 this@MainActivity,
@@ -128,6 +138,11 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         } catch (e: NullPointerException) {
+            Toast.makeText(
+                this@MainActivity,
+                "${e.message}  :: null pointer exception",
+                Toast.LENGTH_SHORT
+            ).show()
             e.printStackTrace()
         }
     }
