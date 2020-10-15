@@ -18,7 +18,7 @@ import com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager
 
 
 class MainActivity : AppCompatActivity() {
-    val samsungPayButton: ImageView by lazy { findViewById(R.id.samsung_pay_button) }
+    val samsungPayButton: Button by lazy { findViewById(R.id.samsung_pay_button) }
     private val partnerInfo by lazy {
         val bundle = Bundle()
         bundle.putString(

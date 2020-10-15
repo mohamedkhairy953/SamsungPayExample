@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".view.MainActivity">
 
-    <ImageView
+    <Button
         android:id="@+id/samsung_pay_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/pay_rectangular_full_screen_black"
+
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
