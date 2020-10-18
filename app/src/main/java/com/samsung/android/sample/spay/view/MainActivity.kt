@@ -32,63 +32,72 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         checkSamsungPayStatus()
-        val cardId = "cardID_test"
+         try {
+             val cardId = "cardID_test"
 
-        val metaData = Bundle()
-        metaData.putString(
-            PaymentManager.EXTRA_PAY_OPERATION_TYPE,
-            PaymentManager.PAY_OPERATION_TYPE_PAYMENT
-        )
-        metaData.putString(PaymentManager.EXTRA_ISSUER_NAME, "issuer name")
-        metaData.putInt(
-            PaymentManager.EXTRA_TRANSACTION_TYPE,
-            PaymentManager.TRANSACTION_TYPE_MST or PaymentManager.TRANSACTION_TYPE_NFC
-        )
+             val metaData = Bundle()
+             metaData.putString(
+                 PaymentManager.EXTRA_PAY_OPERATION_TYPE,
+                 PaymentManager.PAY_OPERATION_TYPE_PAYMENT
+             )
+             metaData.putString(PaymentManager.EXTRA_ISSUER_NAME, "issuer name")
+             metaData.putInt(
+                 PaymentManager.EXTRA_TRANSACTION_TYPE,
+                 PaymentManager.TRANSACTION_TYPE_MST or PaymentManager.TRANSACTION_TYPE_NFC
+             )
 
-        val cardInfo: CardInfo = CardInfo.Builder()
-            .setBrand(SpaySdk.Brand.VISA)
-            .setCardId(cardId)
-            .setCardMetaData(metaData)
-            .setBrand(SpaySdk.Brand.MASTERCARD)
-            .build()
+             val cardInfo: CardInfo = CardInfo.Builder()
+                 .setBrand(SpaySdk.Brand.VISA)
+                 .setCardId(cardId)
+                 .setCardMetaData(metaData)
+                 .setBrand(SpaySdk.Brand.MASTERCARD)
+                 .build()
+             samsungPayButton.setOnClickListener {
+                 PaymentManager(this, partnerInfo).startSimplePay(cardInfo,
+                     object : StatusListener {
 
-        samsungPayButton.setOnClickListener {
-            PaymentManager(this, partnerInfo).startSimplePay(cardInfo,
-                object : StatusListener {
+                         override fun onSuccess(p0: Int, p1: Bundle?) {
+                             Log.d("TAG", "onSuccess: $p1")
+                             Toast.makeText(
+                                 this@MainActivity,
+                                 "Success $p0",
+                                 Toast.LENGTH_SHORT
+                             ).show()
+                             p1?.keySet()?.forEach {
+                                 Toast.makeText(
+                                     this@MainActivity,
+                                     "${p1.get(it)}   :: $it",
+                                     Toast.LENGTH_SHORT
+                                 ).show()
+                             }
+                         }
 
-                    override fun onSuccess(p0: Int, p1: Bundle?) {
-                        Log.d("TAG", "onSuccess: $p1")
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Success $p0",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        p1?.keySet()?.forEach {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "${p1.get(it)}   :: $it",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+                         override fun onFail(p0: Int, p1: Bundle?) {
+                             Toast.makeText(
+                                 this@MainActivity,
+                                 "onFail $p0",
+                                 Toast.LENGTH_SHORT
+                             ).show()
+                             p1?.keySet()?.forEach {
+                                 Toast.makeText(
+                                     this@MainActivity,
+                                     "${p1.get(it)}   :: $it",
+                                     Toast.LENGTH_SHORT
+                                 ).show()
+                             }
+                         }
 
-                    override fun onFail(p0: Int, p1: Bundle?) {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "onFail $p0",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        p1?.keySet()?.forEach {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "${p1.get(it)}   :: $it",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+                     })
+             }
 
-                })
-        }
+         }catch (e:Exception){
+             Toast.makeText(
+                 this@MainActivity,
+                 "${e.message}  ::  exception",
+                 Toast.LENGTH_SHORT
+             ).show()
+             e.printStackTrace()
+         }
     }
 
     private fun checkSamsungPayStatus() {
@@ -137,10 +146,10 @@ class MainActivity : AppCompatActivity() {
                     Log.d("TAG", "checkSamsungPayStatus onFail() : $errorCode")
                 }
             })
-        } catch (e: NullPointerException) {
+        } catch (e: Exception) {
             Toast.makeText(
                 this@MainActivity,
-                "${e.message}  :: null pointer exception",
+                "${e.message}  ::  exception",
                 Toast.LENGTH_SHORT
             ).show()
             e.printStackTrace()
