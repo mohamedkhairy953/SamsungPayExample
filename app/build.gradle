@@ -29,7 +29,7 @@ android {
             resValue "string", "gradle_product_id", "aa0f13c059104fceb3e64d"
         }
         debug {
-            resValue "string", "gradle_debug_mode", "N"
+            resValue "string", "gradle_debug_mode", "Y"
             resValue "string", "gradle_server_type", "PRD"
             resValue "string", "gradle_spay_debug_api_key", "253ca19b9a5045f0910b8f53596b1e9d"
             resValue "string", "gradle_product_id", "aa0f13c059104fceb3e64d"

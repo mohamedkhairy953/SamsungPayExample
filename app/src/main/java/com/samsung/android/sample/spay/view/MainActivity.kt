@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         Log.d("TAG", ": ${SpaySdk.ServiceType.INAPP_PAYMENT.toString()}")
         bundle.putString(
             SamsungPay.PARTNER_SERVICE_TYPE,
-            "InApp Online Payment Service(Direct, InDirect)"
+            SpaySdk.ServiceType.INAPP_PAYMENT.name
         )
         PartnerInfo(getString(R.string.gradle_product_id), bundle)
     }
