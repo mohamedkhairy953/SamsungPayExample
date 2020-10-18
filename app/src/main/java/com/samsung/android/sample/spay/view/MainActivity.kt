@@ -21,9 +21,11 @@ class MainActivity : AppCompatActivity() {
     val samsungPayButton: Button by lazy { findViewById(R.id.samsung_pay_button) }
     private val partnerInfo by lazy {
         val bundle = Bundle()
+        Log.d("TAG", ": ${SpaySdk.ServiceType.INAPP_PAYMENT.name}")
+        Log.d("TAG", ": ${SpaySdk.ServiceType.INAPP_PAYMENT.toString()}")
         bundle.putString(
             SamsungPay.PARTNER_SERVICE_TYPE,
-            getString(R.string.gradle_server_type)
+            "InApp Online Payment Service(Direct, InDirect)"
         )
         PartnerInfo(getString(R.string.gradle_product_id), bundle)
     }
