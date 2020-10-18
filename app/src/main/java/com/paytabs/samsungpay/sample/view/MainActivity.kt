@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
                  PaymentManager.EXTRA_PAY_OPERATION_TYPE,
                  PaymentManager.PAY_OPERATION_TYPE_PAYMENT
              )
-             metaData.putString(PaymentManager.EXTRA_ISSUER_NAME, "issuer name")
              metaData.putInt(
                  PaymentManager.EXTRA_TRANSACTION_TYPE,
                  PaymentManager.TRANSACTION_TYPE_MST or PaymentManager.TRANSACTION_TYPE_NFC
@@ -119,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                         SamsungPay.SPAY_NOT_READY -> {
                             Toast.makeText(this@MainActivity, "SPAY_NOT_READY", Toast.LENGTH_SHORT)
                                 .show()
-                            samsungPayButton.visibility = View.INVISIBLE
+                           // samsungPayButton.visibility = View.INVISIBLE
 
                         }                           // Activate Samsung Pay or update Samsung Pay, if needed
                         SamsungPay.SPAY_READY ->                             // Samsung Pay is ready
