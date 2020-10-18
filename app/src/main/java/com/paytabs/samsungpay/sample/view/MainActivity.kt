@@ -1,19 +1,17 @@
-package com.samsung.android.sample.spay.view
+package com.paytabs.samsungpay.sample.view
 
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.samsung.android.sample.spay.R
+import com.paytabs.samsungpay.sample.R
 import com.samsung.android.sdk.samsungpay.v2.PartnerInfo
 import com.samsung.android.sdk.samsungpay.v2.SamsungPay
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk
 import com.samsung.android.sdk.samsungpay.v2.StatusListener
 import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo
-import com.samsung.android.sdk.samsungpay.v2.payment.PaymentInfo
 import com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager
 
 

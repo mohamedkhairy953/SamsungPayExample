@@ -11,7 +11,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     defaultConfig {
-        applicationId "com.samsung.android.sample.spay"
+        applicationId "com.paytabs.samsungpay.sample"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
