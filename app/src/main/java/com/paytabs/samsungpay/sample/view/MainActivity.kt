@@ -46,10 +46,8 @@ class MainActivity : AppCompatActivity() {
              )
 
              val cardInfo: CardInfo = CardInfo.Builder()
-                 .setBrand(SpaySdk.Brand.VISA)
                  .setCardId(cardId)
                  .setCardMetaData(metaData)
-                 .setBrand(SpaySdk.Brand.MASTERCARD)
                  .build()
              samsungPayButton.setOnClickListener {
                  PaymentManager(this, partnerInfo).startSimplePay(cardInfo,
