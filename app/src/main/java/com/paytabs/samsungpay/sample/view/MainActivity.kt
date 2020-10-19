@@ -20,7 +20,7 @@ import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet
 import java.util.*
 
 
-class MainActivity : AppCompatActivity() ,CustomSheetTransactionInfoListener{
+class MainActivity : AppCompatActivity(), CustomSheetTransactionInfoListener {
     private val TAG = "SampleMerchantActivity"
     private val AMOUNT_CONTROL_ID = "amount_control_id"
     private var paymentManager: PaymentManager? = null
@@ -53,15 +53,18 @@ class MainActivity : AppCompatActivity() ,CustomSheetTransactionInfoListener{
             paymentManager!!.startInAppPayWithCustomSheet(customSheetPaymentInfo, this)
         } catch (e: IllegalStateException) {
             e.printStackTrace()
-            Toast.makeText(this@MainActivity, "Fail ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@MainActivity, "Fail ${e.localizedMessage}", Toast.LENGTH_LONG)
+                .show()
             Log.e(TAG, e.toString())
         } catch (e: NullPointerException) {
             e.printStackTrace()
-            Toast.makeText(this@MainActivity, "Fail ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@MainActivity, "Fail ${e.localizedMessage}", Toast.LENGTH_LONG)
+                .show()
             Log.e(TAG, e.toString())
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
-            Toast.makeText(this@MainActivity, "Fail  ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@MainActivity, "Fail  ${e.localizedMessage}", Toast.LENGTH_LONG)
+                .show()
             Log.e(TAG, e.toString())
         }
     }
@@ -86,6 +89,11 @@ class MainActivity : AppCompatActivity() ,CustomSheetTransactionInfoListener{
         bundle: Bundle?
     ) {
         Toast.makeText(this@MainActivity, "Success", Toast.LENGTH_LONG).show()
+        Toast.makeText(this@MainActivity, s, Toast.LENGTH_LONG).show()
+        bundle?.keySet()?.forEach {
+            Log.d(TAG, it + " : " + bundle[it])
+            Toast.makeText(this@MainActivity, it + " : " + bundle[it], Toast.LENGTH_LONG).show()
+        }
         Log.d(TAG, s!!)
     }
 
