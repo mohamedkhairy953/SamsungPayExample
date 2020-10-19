@@ -2,155 +2,105 @@ package com.paytabs.samsungpay.sample.view
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.Button
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import com.paytabs.samsungpay.sample.R
+import com.samsung.android.sdk.samsungpay.BuildConfig
 import com.samsung.android.sdk.samsungpay.v2.PartnerInfo
 import com.samsung.android.sdk.samsungpay.v2.SamsungPay
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk
-import com.samsung.android.sdk.samsungpay.v2.StatusListener
 import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo
+import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo
 import com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager
+import com.samsung.android.sdk.samsungpay.v2.payment.PaymentManager.CustomSheetTransactionInfoListener
+import com.samsung.android.sdk.samsungpay.v2.payment.sheet.AmountBoxControl
+import com.samsung.android.sdk.samsungpay.v2.payment.sheet.AmountConstants
+import com.samsung.android.sdk.samsungpay.v2.payment.sheet.CustomSheet
+import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
-    val samsungPayButton: Button by lazy { findViewById(R.id.samsung_pay_button) }
-    private val partnerInfo by lazy {
-        val bundle = Bundle()
-        Log.d("TAG", ": ${SpaySdk.ServiceType.INAPP_PAYMENT.name}")
-        Log.d("TAG", ": ${SpaySdk.ServiceType.INAPP_PAYMENT.toString()}")
-        bundle.putString(
-            SamsungPay.PARTNER_SERVICE_TYPE,
-            SpaySdk.ServiceType.INAPP_PAYMENT.name
-        )
-        PartnerInfo(getString(R.string.gradle_product_id), bundle)
-    }
+class MainActivity : AppCompatActivity() ,CustomSheetTransactionInfoListener{
+    private val TAG = "SampleMerchantActivity"
+    private val AMOUNT_CONTROL_ID = "amount_control_id"
+    private var paymentManager: PaymentManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        checkSamsungPayStatus()
-         try {
-             val cardId = "cardID_test"
-
-             val metaData = Bundle()
-             metaData.putString(
-                 PaymentManager.EXTRA_PAY_OPERATION_TYPE,
-                 PaymentManager.PAY_OPERATION_TYPE_PAYMENT
-             )
-             metaData.putInt(
-                 PaymentManager.EXTRA_TRANSACTION_TYPE,
-                 PaymentManager.TRANSACTION_TYPE_MST or PaymentManager.TRANSACTION_TYPE_NFC
-             )
-
-             val cardInfo: CardInfo = CardInfo.Builder()
-                 .setCardId(cardId)
-                 .setCardMetaData(metaData)
-                 .build()
-             samsungPayButton.setOnClickListener {
-                 PaymentManager(this, partnerInfo).startSimplePay(cardInfo,
-                     object : StatusListener {
-
-                         override fun onSuccess(p0: Int, p1: Bundle?) {
-                             Log.d("TAG", "onSuccess: $p1")
-                             Toast.makeText(
-                                 this@MainActivity,
-                                 "Success $p0",
-                                 Toast.LENGTH_SHORT
-                             ).show()
-                             p1?.keySet()?.forEach {
-                                 Toast.makeText(
-                                     this@MainActivity,
-                                     "${p1.get(it)}   :: $it",
-                                     Toast.LENGTH_SHORT
-                                 ).show()
-                             }
-                         }
-
-                         override fun onFail(p0: Int, p1: Bundle?) {
-                             Toast.makeText(
-                                 this@MainActivity,
-                                 "onFail $p0",
-                                 Toast.LENGTH_SHORT
-                             ).show()
-                             p1?.keySet()?.forEach {
-                                 Toast.makeText(
-                                     this@MainActivity,
-                                     "${p1.get(it)}   :: $it",
-                                     Toast.LENGTH_SHORT
-                                 ).show()
-                             }
-                         }
-
-                     })
-             }
-
-         }catch (e:Exception){
-             Toast.makeText(
-                 this@MainActivity,
-                 "${e.message}  ::  exception",
-                 Toast.LENGTH_SHORT
-             ).show()
-             e.printStackTrace()
-         }
+        val brandList = ArrayList<SpaySdk.Brand>()
+        brandList.add(SpaySdk.Brand.VISA)
+        brandList.add(SpaySdk.Brand.MASTERCARD)
+        val customSheet = CustomSheet()
+        customSheet.addControl(makeAmountControl())
+        val customSheetPaymentInfo = CustomSheetPaymentInfo.Builder()
+            .setMerchantId("123456")
+            .setMerchantName("Sample Merchant")
+            .setOrderNumber("12345566")
+            .setAllowedCardBrands(brandList)
+            .setCardHolderNameEnabled(true)
+            .setRecurringEnabled(false)
+            .setCustomSheet(customSheet)
+            .build()
+        try {
+            val bundle = Bundle()
+            bundle.putString(
+                SamsungPay.PARTNER_SERVICE_TYPE,
+                SpaySdk.ServiceType.INAPP_PAYMENT.toString()
+            )
+            val partnerInfo = PartnerInfo(getString(R.string.gradle_product_id), bundle)
+            paymentManager = PaymentManager(this, partnerInfo)
+            paymentManager!!.startInAppPayWithCustomSheet(customSheetPaymentInfo, this)
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+            Toast.makeText(this@MainActivity, "Fail ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            Log.e(TAG, e.toString())
+        } catch (e: NullPointerException) {
+            e.printStackTrace()
+            Toast.makeText(this@MainActivity, "Fail ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            Log.e(TAG, e.toString())
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            Toast.makeText(this@MainActivity, "Fail  ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            Log.e(TAG, e.toString())
+        }
     }
 
-    private fun checkSamsungPayStatus() {
-
-        val samsungPay = SamsungPay(this, partnerInfo)
+    override fun onCardInfoUpdated(cardInfo: CardInfo?, customSheet: CustomSheet) {
+        val amountBoxControl = customSheet.getSheetControl(AMOUNT_CONTROL_ID) as AmountBoxControl
+        amountBoxControl.setAmountTotal(1.0, AmountConstants.FORMAT_TOTAL_PRICE_ONLY) // grand total
+        customSheet.updateControl(amountBoxControl)
+        // Call updateSheet() with AmountBoxControl; mandatory.
         try {
-            samsungPay.getSamsungPayStatus(object : StatusListener {
-                override fun onSuccess(status: Int, bundle: Bundle) {
-                    when (status) {
-                        SamsungPay.SPAY_NOT_SUPPORTED -> {
-                            //  samsungPayButton.visibility = View.INVISIBLE
-                            Toast.makeText(
-                                this@MainActivity,
-                                "SPAY_NOT_SUPPORTED",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                        }                            // Samsung Pay is not supported
-                        SamsungPay.SPAY_NOT_READY -> {
-                            Toast.makeText(this@MainActivity, "SPAY_NOT_READY", Toast.LENGTH_SHORT)
-                                .show()
-                           // samsungPayButton.visibility = View.INVISIBLE
-
-                        }                           // Activate Samsung Pay or update Samsung Pay, if needed
-                        SamsungPay.SPAY_READY ->                             // Samsung Pay is ready
-                        {
-                            Toast.makeText(this@MainActivity, "SPAY_READY", Toast.LENGTH_SHORT)
-                                .show()
-
-                            samsungPayButton.visibility = View.VISIBLE
-                        }
-                        else ->                             // Not expected result
-                        {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Not expected result",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            samsungPayButton.visibility = View.INVISIBLE
-                        }
-                    }
-                }
-
-                override fun onFail(errorCode: Int, bundle: Bundle) {
-                    samsungPayButton.setVisibility(View.INVISIBLE)
-                    Log.d("TAG", "checkSamsungPayStatus onFail() : $errorCode")
-                }
-            })
-        } catch (e: Exception) {
-            Toast.makeText(
-                this@MainActivity,
-                "${e.message}  ::  exception",
-                Toast.LENGTH_SHORT
-            ).show()
+            paymentManager!!.updateSheet(customSheet)
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+        } catch (e: NullPointerException) {
             e.printStackTrace()
         }
     }
 
+    override fun onSuccess(
+        customSheetPaymentInfo: CustomSheetPaymentInfo?,
+        s: String?,
+        bundle: Bundle?
+    ) {
+        Toast.makeText(this@MainActivity, "Success", Toast.LENGTH_LONG).show()
+        Log.d(TAG, s!!)
+    }
+
+    override fun onFailure(i: Int, bundle: Bundle) {
+        Toast.makeText(this@MainActivity, "Fail $i", Toast.LENGTH_LONG).show()
+        Log.e(TAG, "$i ")
+        for (key in bundle.keySet()) {
+            Log.d(TAG, key + " : " + bundle[key])
+            Toast.makeText(this@MainActivity, key + " : " + bundle[key], Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun makeAmountControl(): AmountBoxControl? {
+        val amountBoxControl = AmountBoxControl(AMOUNT_CONTROL_ID, "AED")
+        amountBoxControl.setAmountTotal(1.0, AmountConstants.FORMAT_TOTAL_PRICE_ONLY)
+        return amountBoxControl
+    }
 }
